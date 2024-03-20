@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const Product = require("../models/products");
 
 const router = Router();
 
@@ -143,4 +144,29 @@ router.post("/logout", (req, res) => {
   });
 });
 
+
+router.get("/products", async (req, res) => {
+  try {
+    // Verify JWT token
+    const token = req.cookies.jwt;
+    const decoded = jwt.verify(token, "secret");
+    if (!decoded) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+    
+    // Fetch all products from the database
+    const products = await Product.find();
+    
+    // Return the products
+    res.send(products);
+  } catch (err) {
+    // Handle errors
+    console.error(err);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 module.exports = router;
