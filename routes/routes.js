@@ -102,11 +102,11 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ _id: user._id }, "secret key");
+  const token = jwt.sign({ _id: user._id }, "secret");
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // for 1 day
+    maxAge: 60 * 60 * 1000, // for 1 day
   });
 
   res.send({
@@ -115,7 +115,6 @@ router.post("/login", async (req, res) => {
 });
 
 router.get("/user", async (req, res) => {
-  res.send({ message: "success"})
   try {
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
