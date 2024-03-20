@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const Product = require("../models/products");
 
 const router = Router();
 
@@ -43,12 +44,10 @@ const router = Router();
 //     maxAge: 24 * 60 * 60 * 1000,
 //   });
 
-
 //   res.json({
 //     message: "Success"
 //   });
 
-  
 //   res.json({
 //     user: result,
 //   });
@@ -71,7 +70,7 @@ router.post("/register", async (req, res) => {
       password: hashpassword,
       name: name,
     });
-    
+
     const result = await user.save();
 
     //jwt token
@@ -91,29 +90,83 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  res.json("login user");
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return res.status(404).send({
+      message: "User not found",
+    });
+  }
+
+  if (!(await bcrypt.compare(req.body.password, user.password))) {
+    return res.status(400).send({
+      message: "Password is incorrect",
+    });
+  }
+
+  const token = jwt.sign({ _id: user._id }, "secret");
+
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 1000, // for 1 day
+  });
+
+  res.send({
+    message: "success",
+  });
 });
 
 router.get("/user", async (req, res) => {
-  try{
+  try {
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
-    if(!decoded){
+    if (!decoded) {
       return res.status(401).json({
-        message: "Unauthorized"
-      })
+        message: "Unauthorized",
+      });
     }
     const { _id } = decoded;
     const user = await User.findById(_id);
-    const {password,...data}= await user.toJSON();
+    const { password, ...data } = await user.toJSON();
     res.json({
       user: data,
     });
-  } catch(err){
+  } catch (err) {
     return res.status(401).json({
-      message: "Unauthorized"
-    })
+      message: "Unauthorized",
+    });
   }
 });
+router.post("/logout", (req, res) => {
+  res.cookie("jwt", "", { maxAge: 0 });
 
+  res.send({
+    message: "success",
+  });
+});
+
+
+router.get("/products", async (req, res) => {
+  try {
+    // Verify JWT token
+    const token = req.cookies.jwt;
+    const decoded = jwt.verify(token, "secret");
+    if (!decoded) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+    
+    // Fetch all products from the database
+    const products = await Product.find();
+    
+    // Return the products
+    res.send(products);
+  } catch (err) {
+    // Handle errors
+    console.error(err);
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+});
 module.exports = router;
