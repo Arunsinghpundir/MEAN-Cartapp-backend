@@ -98,20 +98,22 @@ router.get("/user", async (req, res) => {
   try{
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
+    console.log("decoded", decoded);
     if(!decoded){
       return res.status(401).json({
-        message: "Unauthorized"
+        message: "decoded not found - Unauthorized"
       })
     }
     const { _id } = decoded;
     const user = await User.findById(_id);
+    console.log("user", user)
     const {password,...data}= await user.toJSON();
     res.json({
       user: data,
     });
   } catch(err){
     return res.status(401).json({
-      message: "Unauthorized"
+      message: "master err - Unauthorized" + err;
     })
   }
 });
