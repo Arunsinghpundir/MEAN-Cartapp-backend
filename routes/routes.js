@@ -89,31 +89,66 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) {
-    return res.status(404).send({
-      message: "User not found",
-    });
-  }
+// router.post("/login", async (req, res) => {
+//   const user = await User.findOne({ email: req.body.email });
+//   if (!user) {
+//     return res.status(404).send({
+//       message: "User not found",
+//     });
+//   }
 
-  if (!(await bcrypt.compare(req.body.password, user.password))) {
-    return res.status(400).send({
-      message: "Password is incorrect",
-    });
-  }
+//   if (!(await bcrypt.compare(req.body.password, user.password))) {
+//     return res.status(400).send({
+//       message: "Password is incorrect",
+//     });
+//   }
 
-  const token = jwt.sign({ _id: user._id }, "secret");
+//   const token = jwt.sign({ _id: user._id }, "secret");
 
-  res.cookie("jwt", token, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 1000, 
-  });
-  res.send({
-    user: user,
-    token: token,
-  })
+//   res.cookie("jwt", token, {
+//     httpOnly: true,
+//     maxAge: 60 * 60 * 1000, 
+//   });
+//   res.send({
+//     user: user,
+//     token: token,
+//   })
  
+// });
+router.post("/login", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).send({
+        message: "User not found",
+      });
+    }
+
+    const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).send({
+        message: "Password is incorrect",
+      });
+    }
+
+    const token = jwt.sign({ _id: user._id }, "secret", { expiresIn: '1h' });
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000, 
+      secure: true, // Set this if your app runs on HTTPS
+      sameSite: 'strict' // Set this to mitigate CSRF attacks
+    });
+    res.json({
+      userId: user._id,
+      email: user.email,
+      // You can include other necessary user data here
+      token: token,
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 // router.get("/user", async (req, res) => {
