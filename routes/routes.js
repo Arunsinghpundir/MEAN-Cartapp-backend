@@ -137,7 +137,7 @@ router.post("/login", async (req, res) => {
       httpOnly: true,
       maxAge: 60 * 60 * 1000, 
       secure: true, // Set this if your app runs on HTTPS
-      sameSite: 'strict' // Set this to mitigate CSRF attacks
+      sameSite: 'lax' // Set this to mitigate CSRF attacks
     });
     res.json({
       userId: user._id,
