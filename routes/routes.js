@@ -116,18 +116,35 @@ router.post("/login", async (req, res) => {
  
 });
 
-router.get("/user", async (req, res) => {
+// router.get("/user", async (req, res) => {
+//   try {
+//     const token = req.cookies.jwt;
+//     const decoded = jwt.verify(token, "secret");
+//     console.log("decoded", decoded);
+   
+//     console.log("here", "129 line pr");
+
+//     const { _id } = decoded;
+//     console.log("here", "132 line pr");
+//     const user = await User.findById(_id);
+//     console.log("here", "134 line pr" ,user);
+//     const {password,...data}=  user.toJSON();
+//     res.json({
+//       user: data,
+//     });
+//   } catch (err) {
+//     return res.status(401).json({
+//       message: "Master err - Unauthorized" + err
+//     })
+//   }
+// });
+router.post("/user", async (req, res) => {
   try {
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
-    console.log("decoded", decoded);
-   
-    console.log("here", "129 line pr");
-
+  
     const { _id } = decoded;
-    console.log("here", "132 line pr");
     const user = await User.findById(_id);
-    console.log("here", "134 line pr" ,user);
     const {password,...data}=  user.toJSON();
     res.json({
       user: data,
@@ -138,6 +155,7 @@ router.get("/user", async (req, res) => {
     })
   }
 });
+
 router.post("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: 0 });
 
