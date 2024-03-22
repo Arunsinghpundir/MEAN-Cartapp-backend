@@ -120,19 +120,18 @@ router.get("/user", async (req, res) => {
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
     console.log("decoded", decoded);
-    if (!decoded) {
-    if(!decoded){
-      return res.status(401).json({
-        message: "decode not found - Unauthorized"
-      })
-    }
+   
+    console.log("here", "129 line pr");
+
     const { _id } = decoded;
+    console.log("here", "132 line pr");
     const user = await User.findById(_id);
-    const {password,...data}= await user.toJSON();
+    console.log("here", "134 line pr" ,user);
+    const {password,...data}=  user.toJSON();
     res.json({
       user: data,
     });
-  }} catch (err) {
+  } catch (err) {
     return res.status(401).json({
       message: "Master err - Unauthorized" + err
     })
