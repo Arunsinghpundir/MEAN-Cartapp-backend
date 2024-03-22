@@ -124,14 +124,15 @@ router.post("/login", async (req, res) => {
         message: "User not found",
       });
     }
-
+    console.log("req.body.password", req.body.password);
+    console.log("user.password", user.password);
     const passwordMatch = await bcrypt.compare(req.body.password, user.password);
     if (!passwordMatch) {
       return res.status(400).send({
         message: "Password is incorrect",
       });
     }
-
+    console.log(passwordMatch)
     const token = jwt.sign({ _id: user._id }, "secret", { expiresIn: '1h' });
 
     res.cookie("jwt", token, {
