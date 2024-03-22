@@ -123,7 +123,7 @@ router.get("/user", async (req, res) => {
     if (!decoded) {
     if(!decoded){
       return res.status(401).json({
-        message: "Unauthorized"
+        message: "decode not found - Unauthorized"
       })
     }
     const { _id } = decoded;
@@ -132,9 +132,9 @@ router.get("/user", async (req, res) => {
     res.json({
       user: data,
     });
-  } catch (err) {
+  }} catch (err) {
     return res.status(401).json({
-      message: "Unauthorized"
+      message: "Master err - Unauthorized" + err;
     })
   }
 });
