@@ -110,9 +110,7 @@ router.post("/login", async (req, res) => {
     maxAge: 60 * 60 * 1000, 
   });
 
-  res.send({
-    message: "success",
-  });
+ 
 });
 
 router.get("/user", async (req, res) => {
