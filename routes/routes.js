@@ -80,6 +80,7 @@ router.post("/register", async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
+      sameSite: 'none',
     });
 
     return res.json({
@@ -136,13 +137,12 @@ router.post("/login", async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       maxAge: 60 * 60 * 1000, 
-      secure: true, // Set this if your app runs on HTTPS
-      sameSite: 'lax' // Set this to mitigate CSRF attacks
+      secure: true, 
+      sameSite: 'none' 
     });
     res.json({
       userId: user._id,
       email: user.email,
-      // You can include other necessary user data here
       token: token,
     });
   } catch (err) {
