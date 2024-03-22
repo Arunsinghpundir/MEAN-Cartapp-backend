@@ -12,7 +12,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:4200"],
+    origin: ["https://shopcart-izsid2de7-arunsinghpundirs-projects.vercel.app"],
   })
 );
 
