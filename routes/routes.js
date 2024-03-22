@@ -134,7 +134,7 @@ router.get("/user", async (req, res) => {
     });
   }} catch (err) {
     return res.status(401).json({
-      message: "Master err - Unauthorized" + err;
+      message: "Master err - Unauthorized" + err
     })
   }
 });
