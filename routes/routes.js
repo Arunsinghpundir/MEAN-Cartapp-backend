@@ -119,8 +119,8 @@ router.get("/user", async (req, res) => {
   try {
     const token = req.cookies.jwt;
     const decoded = jwt.verify(token, "secret");
-    if (!decoded) {
     console.log("decoded", decoded);
+    if (!decoded) {
     if(!decoded){
       return res.status(401).json({
         message: "Unauthorized"
